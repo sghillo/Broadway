@@ -1,0 +1,69 @@
+# AGENT EXECUTION MANIFEST v1.0
+project_name: "Sports_Science_and_Vision_AI_Engine"
+execution_target: "Autonomous Agent Execution Pipeline"
+
+agents:
+  - role: "Data Mining & Ingestion Engineer"
+    module: "ssve.ingestion"
+    goal: "Scrape and ingest academic literature, regulatory feeds, and competition data."
+    tools: ["python", "http_requests", "rss_parser", "pubmed_api"]
+
+  - role: "RAG & Vector DB Architect"
+    module: "ssve.rag"
+    goal: "Set up Qdrant vector database, embedding models, and strict DOI citation guardrails."
+    tools: ["qdrant_client", "sentence_transformers", "vllm_client"]
+
+  - role: "Content Synthesis Specialist"
+    module: "ssve.synthesis"
+    goal: "Generate structured weekly executive digests and competitor memos."
+    tools: ["llm_generator", "markdown_formatter", "email_sender"]
+
+  - role: "Computer Vision & Pose Engineer"
+    module: "ssve.vision"
+    goal: "Build 2D/3D skeletal keypoint extraction and dynamic time warping pipelines."
+    tools: ["opencv", "ultralytics_yolo", "scipy_dtw"]
+
+# ---------------------------------------------------------------------------
+# Runtime configuration consumed by `ssve weekly`
+# ---------------------------------------------------------------------------
+ingestion:
+  lookback_days: 7
+  pubmed:
+    max_results: 100
+    queries:
+      - '("sports medicine"[MeSH] OR "athletic performance"[MeSH]) AND (training load OR injury)'
+      - '"computer vision" AND (biomechanics OR "pose estimation") AND sport'
+      - 'creatine OR "heat acclimation" OR "sleep extension" AND athletes'
+  rss:
+    # Replace with the regulatory/governing-body feeds you monitor; check each site's terms.
+    - name: "bjsm"
+      url: "https://bjsm.bmj.com/rss/current.xml"
+      kind: "literature"
+  competition: []
+    # - name: "example_results"
+    #   location: "data/results.csv"
+    #   fmt: "csv"
+    #   title_fields: ["event", "athlete", "result"]
+    #   date_field: "date"
+
+rag:
+  backend: "qdrant"          # qdrant | memory
+  qdrant_url: "http://localhost:6333"
+  collection: "sports_science"
+  embedding_model: "BAAI/bge-small-en-v1.5"
+  llm: "vllm"                # vllm | extractive
+  top_k: 6
+
+synthesis:
+  themes:
+    - "What does recent evidence say about training load and injury risk?"
+    - "How accurate is markerless pose estimation for sports biomechanics?"
+  competitors:
+    - name: "Catapult"
+      aliases: ["Catapult Sports"]
+    - name: "Hawk-Eye"
+      aliases: ["Hawkeye"]
+  email:
+    to: []
+    dry_run: true
+  output_dir: "reports"

@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ssve"
+version = "0.1.0"
+description = "Sports Science & Vision AI Engine: literature ingestion, DOI-grounded RAG, digests, and pose/DTW analysis"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.24",
+  "scipy>=1.10",
+  "requests>=2.31",
+  "feedparser>=6.0",
+  "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+rag = ["qdrant-client>=1.10", "sentence-transformers>=2.7"]
+vision = ["opencv-python-headless>=4.8", "ultralytics>=8.3"]
+email = ["markdown>=3.5"]
+dev = ["pytest>=8"]
+all = ["ssve[rag,vision,email]"]
+
+[project.scripts]
+ssve = "ssve.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
